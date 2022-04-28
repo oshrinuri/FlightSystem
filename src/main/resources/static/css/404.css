@@ -1,0 +1,50 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+html,
+body {
+    background-color: #121b40;
+    color: #fff;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Mukta", sans-serif;
+    font-size: 24px;
+}
+
+.container {
+    font-family: "Mukta", sans-serif;
+    position: absolute;
+    color: #FFFFFF;
+    font-weight: 500;
+    height: fit-content;
+    width: fit-content;
+    text-align: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 30px;
+    line-height: 0px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#lottie-404 {
+    height: 400px;
+    width: 400px;
+}
+
+lottie-player {
+    margin: 0 auto;
+}
+
+p {
+    line-height: 1;
+}

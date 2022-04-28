@@ -1,0 +1,151 @@
+@media only screen and (max-width:600px) {
+    * {
+        font-size: smaller
+    }
+    body,
+    html {
+        width: fit-content !important
+    }
+}
+
+* {
+    font-family: Roboto, sans-serif;
+    font-weight: 500
+}
+
+.airplane_img {
+    position: absolute;
+    left: 10px;
+    max-width: 24px;
+    max-height: 24px
+}
+
+.float-right {
+    margin-right: 16px !important
+}
+
+table {
+    font-size: 18px
+}
+
+thead {
+    background: linear-gradient(0deg, #343a40ec, #343a40);
+    color: #fff
+}
+
+.serial {
+    padding-left: 42px !important
+}
+
+td {
+    text-align: left;
+    vertical-align: middle;
+    padding: 10px !important
+}
+
+th {
+    text-align: left;
+    vertical-align: middle
+}
+
+.nav-item>a {
+    margin-left: 18px
+}
+
+.vertical-divider {
+    margin-left: 18px;
+    width: 0;
+    height: 40px;
+    border-right: 1px solid rgba(255, 255, 255, .2);
+    border-left: 1px solid rgba(0, 0, 0, .4)
+}
+
+.lastRow {
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, .4);
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    border-bottom: transparent
+}
+
+#flights-table th:first-child {
+    padding-left: 40px
+}
+
+#flights-table tr td:first-child {
+    padding-left: 40px !important
+}
+
+.btn-dark,
+.btn-dark:active,
+.btn-dark:visited {
+    font-family: Roboto, sans-serif;
+    width: 100%;
+    transform: scaleX(.95) scaleY(.95);
+    background: radial-gradient(circle, #41464b 45%, #212529 100%);
+    border-radius: 16px
+}
+
+.btn-dark:focus {
+    outline: 0;
+    box-shadow: none
+}
+
+.btn-dark:hover {
+    font-family: Roboto, sans-serif;
+    transform: scaleX(1.02) scaleY(1.02);
+    background: radial-gradient(circle, #2f4d7a 45%, #212529 100%)
+}
+
+.lastHeader {
+    text-align: center
+}
+
+#right-top-toolbar {
+    position: absolute;
+    display: inline-flex;
+    right: 16px;
+    top: 6px;
+    z-index: 1000
+}
+
+a {
+    color: #fff;
+    text-decoration: none
+}
+
+a:hover {
+    text-decoration: none;
+    color: #00aeff
+}
+
+#username-div {
+    margin-right: 12px;
+    margin-top: 6px;
+    color: #fff;
+    font-weight: 500
+}
+
+#search-box {
+    margin-left: 18px
+}
+
+#spinner {
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 240px;
+    width: 240px
+}
+
+#contactus-textarea {
+    resize: none
+}
+
+.modal-content {
+    border-radius: 30px !important;
+    padding: 5px !important;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, .15), 0 12px 40px 0 rgba(0, 0, 0, .15) !important
+}

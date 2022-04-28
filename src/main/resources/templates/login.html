@@ -1,0 +1,101 @@
+<!doctype html>
+<html xmlns=http://www.w3.org/1999/xhtml xmlns:th=https://www.thymeleaf.org>
+
+<head>
+    <title>FlightSystem Login Page</title>
+    <meta charset=UTF-8>
+    <meta name=viewport content="user-scalable=no,width=device-width,initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link href=/css/bootstrap.min.css rel=stylesheet>
+    <link href=/css/login.css rel=stylesheet>
+    <link href=/css/register.css rel=stylesheet>
+    <link href=https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css rel=stylesheet>
+    <link href=/css/animate.min.css rel=stylesheet>
+    <link href=/css/clouds.css rel=stylesheet>
+    <script crossorigin=anonymous src=https://kit.fontawesome.com/c4338fb992.js></script>
+</head>
+
+<body>
+    <div class=supreme-container>
+        <div id=background-wrap>
+            <div class=x1>
+                <div class=cloud></div>
+            </div>
+            <div class=x2>
+                <div class=cloud></div>
+            </div>
+            <div class=x3>
+                <div class=cloud></div>
+            </div>
+            <div class=x4>
+                <div class=cloud></div>
+            </div>
+            <div class=x5>
+                <div class=cloud></div>
+            </div>
+            <div class=x6>
+                <div class=cloud></div>
+            </div>
+        </div>
+        <div id="loading-icon">
+            <lottie-player class=loading-lottie autoplay background=transparent loop speed=1 src=/lottie/loading.json></lottie-player>
+        </div>
+        <div class=limiter>
+            <div class=container-login100>
+                <div class=wrap-login100>
+                    <lottie-player class=flight-anim autoplay background=transparent loop speed=0.3 src=/lottie/flight.json></lottie-player>
+                    <div class=wrap-elements>
+                        <lottie-player autoplay background=transparent id=lottie-welcome loop speed=1 src=/lottie/welcome.json></lottie-player>
+                        <form class="login100-form validate-form" method=post th:action=@{/login}id="login-form">
+                            <div class="wrap-input100 validate-input" data-validate="Valid username is required"><input autocomplete=off class=input100 minlength=2 name=username placeholder=Username required> <span class=focus-input100></span><span class=symbol-input100> <i class="fa-solid fa-user"></i> </span></div>
+                            <div class="wrap-input100 validate-input"
+                                data-validate="Password is required"><input class=input100 minlength=6 name=password placeholder=Password required type=password> <span class=focus-input100></span><span class=symbol-input100> <i class="fa-solid fa-lock"></i> </span></div>
+                            <div class=submit-button><button class="form-button reset" type=reset id="resetButton"><i class="fa-solid fa-trash-can fa-xs"></i></button><button class=form-button type=submit id="submitButton"><i class="fa-solid fa-right-to-bracket"></i>&nbsp;&nbsp;Sign In</button></div>
+                        </form>
+                    </div>
+                    <div class=wrap-signup>
+                        <div id=container><button class=sign-up data-bs-target=#registerModal data-bs-toggle=modal><span aria-hidden=true class=circle> <span class="icon arrow"></span> </span> <span class=button-text>Sign Up</span></button></div>
+                    </div>
+                    <div class=logo><img src=/images/logo.png></div>
+                </div>
+            </div>
+        </div>
+        <div id=splash>
+            <div class=anim>
+                <div id=loader><svg height=180px version=1.1 viewBox="0 0 60 70" width=160px><defs><filter id=f1 x=0 y=0><feGaussianBlur in=SourceGraphic stdDeviation="2"/></filter></defs><g id=airplane><path d="M0.677,20.977l4.355,1.631c0.281,0.104,0.579,0.162,0.88,0.16l9.76-0.004L30.46,41.58c0.27,0.34,0.679,0.545,1.112,0.541 h1.87c0.992,0,1.676-0.992,1.322-1.918l-6.643-17.439l6.914,0.002l6.038,6.037c0.265,0.266,0.624,0.412,0.999,0.418l1.013-0.004 c1.004-0.002,1.684-1.012,1.312-1.938l-2.911-7.277l2.912-7.278c0.372-0.928-0.313-1.941-1.313-1.938h1.017 c-0.375,0-0.732,0.15-0.996,0.414l-6.039,6.039h-6.915l6.646-17.443c0.354-0.926-0.33-1.916-1.321-1.914l-1.87-0.004 c-0.439,0.004-0.843,0.203-1.112,0.543L15.677,17.24l-9.765-0.002c-0.3,0.002-0.597,0.055-0.879,0.16L0.678,19.03 C-0.225,19.36-0.228,20.637,0.677,20.977z" fill=#ffffff transform="translate(44,0) rotate(90 0 0)"/></g></svg></div>
+            </div>
+        </div>
+    </div>
+    <div class=no-transitions>
+        <div aria-hidden=true class="modal fade" id=registerModal tabindex=-1>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content animate__bounceIn">
+                    <div class=modal-header>
+                        <lottie-player id=new-account-lottie autoplay background=transparent loop speed=1 src=/lottie/new_account.json> </lottie-player>
+                        <h3 class=modal-title>Create a new account</h3>
+                    </div>
+                    <form name="register-form needs-validation" method=post action="#">
+                        <div class="form mt-3">
+                            <div class="input-group mb-3"><span class=input-group-text id=basic-addon1> <i class="bi bi-person-fill"></i> </span><input aria-describedby=basic-addon1 id=reg_username aria-label=Username class=form-control placeholder=Username required></div>
+                            <div class="input-group mb-3"><span class=input-group-text id=basic-addon3> <i class="bi bi-envelope-fill"></i> </span><input aria-describedby=basic-addon1 id=reg_email aria-label=Email class=form-control placeholder=Email type=email required></div>
+                            <div
+                                class="input-group mb-3"><span class=input-group-text> <i class="bi bi-key-fill"></i> </span><input aria-label=Password class=form-control id=reg_password placeholder=Password type=password maxlength=16 required><span class=input-group-text> <i class="bi bi-key-fill"></i> </span>                                <input aria-label="Confirm Password" class=form-control id=reg_password_conf placeholder="Confirm Password" type=password maxlength=16 required></div>
+                </div>
+                <div class=mt-1>
+                    <div class=form-check><input class=form-check-input id=flexCheckDefault onchange='document.getElementById("register-button").disabled=!this.checked' type=checkbox><label class=form-check-label for=flexCheckDefault> I have read and agree to the <a href=#>Terms of service</a> </label></div>
+                </div>
+                <div class=modal-footer><button class="btn btn-secondary" data-bs-dismiss=modal type=button>Cancel</button> <button class="btn btn-primary" disabled id=register-button type=button>Register</button> </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/lottieplayer.js"></script>
+    <script src="/js/login.js"></script>
+</body>
+
+</html>
