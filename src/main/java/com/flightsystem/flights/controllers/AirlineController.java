@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+/**
+ * Airline REST Controller implementation
+ * @author  Oshri Nuri
+ * @version 1.3
+ */
 @RestController
 @RequestMapping("airline")
 public class AirlineController {

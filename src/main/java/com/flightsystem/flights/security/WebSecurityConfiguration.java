@@ -12,7 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 
 import static com.flightsystem.flights.enums.UserRole.*;
-
+/**
+ * Configuration file for Springboot Web Security.
+ * @author  Oshri Nuri
+ * @version 1.3
+ */
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -52,11 +56,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/admin/customers").hasRole(ADMIN.toString())
                     .antMatchers("/customer/**").hasAnyRole(CUSTOMER.toString(), ADMIN.toString())
                     .antMatchers("/contact-us/").permitAll()
+                    .antMatchers("/register").permitAll()
+                     .antMatchers("/registerSuccess").denyAll()
                     .antMatchers("/contact-us/messages/**").hasRole(ADMIN.toString())
                     .and()
                     .formLogin()
-                    .loginPage("/login")
-                    .failureUrl("/login/error")
+                    .loginPage("/login").failureHandler(new CustomAuthenticationFailureHandler())
                     .defaultSuccessUrl("/home",true)
                     .usernameParameter("username").passwordParameter("password")
                     .and()
@@ -66,9 +71,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and().exceptionHandling().authenticationEntryPoint(new Http403ForbiddenEntryPoint())
                     .and().cors()
-                    .and()
-                    .csrf()
-                    .disable();
+                    .and().csrf().disable();
         } catch (Exception e) {
             e.printStackTrace();
         }

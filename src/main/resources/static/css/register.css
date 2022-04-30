@@ -1,21 +1,30 @@
-.modal-content {
-    border-radius: 50px !important;
-    padding: 25px !important;
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, .15), 0 12px 40px 0 rgba(0, 0, 0, .15) !important
-}
-
-.modal .modal-header {
-    justify-content: center;
-    flex-direction: column-reverse !important
-}
-
-body.modal-open .supreme-container {
+.modal-content{border-radius:50px!important;padding:25px!important;box-shadow:0 8px 16px 0 rgba(0,0,0,.15),0 12px 40px 0 rgba(0,0,0,.15)!important}.modal .modal-header{justify-content:center;flex-direction:column-reverse!important}body.modal-open .supreme-container{width:100%;height:100%;position:absolute;-webkit-filter:blur(4px);-moz-filter:blur(4px);-o-filter:blur(4px);-ms-filter:blur(4px);filter:blur(4px)}
+.pass-graybar {
+    height: 5px;
+    background-color: #CCC;
     width: 100%;
-    height: 100%;
+    position: relative;
+  }
+  
+  .pass-colorbar {
+    height: 3px;
+    background-image: url(../images/passwordstrength.jpg);
     position: absolute;
-    -webkit-filter: blur(4px);
-    -moz-filter: blur(4px);
-    -o-filter: blur(4px);
-    -ms-filter: blur(4px);
-    filter: blur(4px)
-}
+    top: 0;
+    left: 0;
+  }
+  
+  .pass-percent, .pass-text {
+    font-size: 1em;
+  }
+  
+  .pass-percent {
+    margin-right: 5px;
+  }
+
+  .pass-wrapper {
+    width: 100%;
+    width: -moz-available;          /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+  }

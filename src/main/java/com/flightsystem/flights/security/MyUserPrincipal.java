@@ -9,7 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+/**
+ * Custom implementation for UserPrincipal. (The principal is the currently logged-in user).
+ * @author  Oshri Nuri
+ * @version 1.3
+ */
 @ToString
 public class MyUserPrincipal implements UserDetails {
     private final transient User user;

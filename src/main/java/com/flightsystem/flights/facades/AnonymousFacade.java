@@ -1,44 +1,42 @@
 package com.flightsystem.flights.facades;
 
-import com.flightsystem.flights.daos.UsersDAO;
+import com.flightsystem.flights.daos.CustomersDAO;
+import com.flightsystem.flights.daos.exceptions.EmailAlreadyExistException;
+import com.flightsystem.flights.daos.exceptions.UsernameAlreadyExistException;
+import com.flightsystem.flights.dtos.Customer;
 import com.flightsystem.flights.dtos.User;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
-
-import static com.flightsystem.flights.facades.FacadeConstants.USER_NULL_EXCEPTION;
+import java.util.UUID;
 
 /**
  * Facade class of Anonymous User.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @NoArgsConstructor
 @Component
 public class AnonymousFacade extends FacadeBase {
-    // TODO :: Yet to be finished!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public void addCustomer(User user) {
-        if (user == null) throw new NullPointerException(USER_NULL_EXCEPTION);
-        UsersDAO usersDAO = new UsersDAO();
-        usersDAO.add(user);
-    }
+    @Autowired CustomersDAO customersDAO;
     /* ------------------------------------------------------------------------------------------------------------------- */
+
     /***
-     * Generates a random String with the (TESTING PURPOSE ONLY - HELPER METHOD)
-     * @param length Desired String length.
-     * @return A random String with English alphabet letters.
+     * Creates a new Customer entity in database, based on a User object.
+     * @param user User to be linked with customer.
+     * @throws EmailAlreadyExistException Email address already exists in database.
+     * @throws UsernameAlreadyExistException Username already exists in database.
      */
-    private static String randomString(int length) {
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-        for(int i = 0; i < length; i++) {
-            int index = random.nextInt(alphabet.length());
-            char randomChar = alphabet.charAt(index);
-            sb.append(randomChar);
-        }
-        return sb.toString();
+    public void addCustomer(User user) throws EmailAlreadyExistException, UsernameAlreadyExistException {
+        long userId = createNewUser(user);
+        String suffix = UUID.randomUUID().toString();
+        Customer customer = new Customer(1, // Temporary values only - will be overridden as soon as Customer
+                "temp",                              // logs in
+                "temp",
+                "temp",
+                "temp_" + suffix,
+                "temp_" + suffix,userId);
+        customersDAO.add(customer);
     }
 }

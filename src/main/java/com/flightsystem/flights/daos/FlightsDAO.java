@@ -2,20 +2,18 @@ package com.flightsystem.flights.daos;
 
 import com.flightsystem.flights.dtos.Customer;
 import com.flightsystem.flights.dtos.Flight;
-import com.flightsystem.flights.sqlconnection.PostgreSQLConnection;
+import com.flightsystem.flights.sqlconnection.PostgresConnectionUtil;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Data Access Layer (DAO) for Flights table in database, providing CRUD operations on database.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @Component
 public class FlightsDAO implements DAO<Flight> {
@@ -47,10 +45,6 @@ public class FlightsDAO implements DAO<Flight> {
             "\"Origin_Country_ID\",\"Destination_Country_ID\",\"Departure_Time\",\"Landing_Time\",\"Remaining_Tickets\""
             + " FROM get_tickets_by_customer(?) JOIN \"Flights\" ON \"Flight_ID\" = \"Flights\".\"ID\"";
     private static final String SQL_GET_ALL_FLIGHTS_BY_AIRLINE_ID = "SELECT * FROM get_flights_by_airline_id(?)";
-    /* Class members ------------------------------------------------------------------------------------------------------*/
-    private final PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-    private ResultSet resultSet;
-    private PreparedStatement statement;
     /* Methods ------------------------------------------------------------------------------------------------------------*/
     /***
      * Retrieves a list of Flights belonging to a given Customer.
@@ -59,21 +53,15 @@ public class FlightsDAO implements DAO<Flight> {
      */
     public static List<Flight> getFlightsByCustomer(Customer customer) {
         List<Flight> flightList = new ArrayList<>();
-        PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_FLIGHTS_BY_CUSTOMER);
-            statement.setLong(1,customer.getCustomerId());
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                flightList.add(fetchFlightObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_FLIGHTS_BY_CUSTOMER)) {
+            statement.setLong(1, customer.getCustomerId());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    flightList.add(fetchFlightObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return flightList;
     }
@@ -88,27 +76,21 @@ public class FlightsDAO implements DAO<Flight> {
     public static List<Flight> getFlightsByParams(int originCountryId, int destinationCountryId,
                                                   Timestamp departureDate) {
         List<Flight> flightList = new ArrayList<>();
-        PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_BY_PARAMS);
-            statement.setInt(1,originCountryId);
-            statement.setInt(2,destinationCountryId);
-            statement.setTimestamp(3,departureDate);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                flightList.add(fetchFlightObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_BY_PARAMS)) {
+            statement.setInt(1, originCountryId);
+            statement.setInt(2, destinationCountryId);
+            statement.setTimestamp(3, departureDate);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    flightList.add(fetchFlightObject(resultSet));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
+        } catch (SQLException e) {
+           e.printStackTrace();
         }
         return flightList;
     }
-    /* ------------------------------------------------------------------------------------------------------------------- */
+        /* ------------------------------------------------------------------------------------------------------------------- */
     /***
      * Retrieves a list of all Flights belonging to an airline by its ID.
      * @param airlineId Airline's ID.
@@ -116,21 +98,15 @@ public class FlightsDAO implements DAO<Flight> {
      */
     public static List<Flight> getFlightsByAirlineId(long airlineId) {
         List<Flight> flightList = new ArrayList<>();
-        PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_FLIGHTS_BY_AIRLINE_ID);
-            statement.setLong(1,airlineId);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                flightList.add(fetchFlightObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_FLIGHTS_BY_AIRLINE_ID)) {
+            statement.setLong(1, airlineId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    flightList.add(fetchFlightObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return flightList;
     }
@@ -180,21 +156,15 @@ public class FlightsDAO implements DAO<Flight> {
      */
     private static List<Flight> pullFlightsByDate(Date date,String query) {
         List<Flight> flightList = new ArrayList<>();
-        PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(query);
-            statement.setDate(1,date);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                flightList.add(fetchFlightObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(query)) {
+            statement.setDate(1, date);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    flightList.add(fetchFlightObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return flightList;
     }
@@ -208,21 +178,15 @@ public class FlightsDAO implements DAO<Flight> {
      */
     private static List<Flight> pullFlightsByCountryId(int countryId,String query) {
         List<Flight> flightList = new ArrayList<>();
-        PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(query);
-            statement.setInt(1,countryId);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                flightList.add(fetchFlightObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(query)) {
+            statement.setInt(1, countryId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    flightList.add(fetchFlightObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return flightList;
     }
@@ -276,22 +240,16 @@ public class FlightsDAO implements DAO<Flight> {
     @Override
     public Flight get(int id) {
         Flight flight = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_FLIGHT_BY_ID);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_GET_FLIGHT_BY_ID)) {
             statement.setLong(1, id);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                flight = fetchFlightObject(resultSet);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
-            } catch (Exception e) {
-                e.printStackTrace();
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    flight = fetchFlightObject(resultSet);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return flight;
     }
@@ -303,17 +261,14 @@ public class FlightsDAO implements DAO<Flight> {
     @Override
     public List<Flight> getAll() {
         List<Flight> flightList = new ArrayList<>();
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_FLIGHTS);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                flightList.add(fetchFlightObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_FLIGHTS)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    flightList.add(fetchFlightObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return flightList;
     }
@@ -324,15 +279,12 @@ public class FlightsDAO implements DAO<Flight> {
      */
     @Override
     public void add(Flight flight) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_ADD_FLIGHT);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_ADD_FLIGHT)) {
             fillStatement(statement, flight);
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -342,16 +294,13 @@ public class FlightsDAO implements DAO<Flight> {
      */
     @Override
     public void remove(Flight flight) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_DEL_FLIGHT);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_DEL_FLIGHT)) {
             statement.setLong(1, flight.getFlightId());
             statement.setLong(2, flight.getAirlineCompanyId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -361,16 +310,13 @@ public class FlightsDAO implements DAO<Flight> {
      */
     @Override
     public void update(Flight flight) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_UPDATE_FLIGHT);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_UPDATE_FLIGHT)) {
             fillStatement(statement, flight);
             statement.setLong(7,flight.getFlightId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
 }

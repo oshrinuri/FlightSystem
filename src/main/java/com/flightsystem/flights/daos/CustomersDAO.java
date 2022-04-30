@@ -1,18 +1,21 @@
 package com.flightsystem.flights.daos;
 
 import com.flightsystem.flights.dtos.Customer;
-import com.flightsystem.flights.sqlconnection.PostgreSQLConnection;
+import com.flightsystem.flights.sqlconnection.PostgresConnectionUtil;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Data Access Layer (DAO) for Customers table in database, providing CRUD operations on database.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @Component
 public class CustomersDAO implements DAO<Customer> {
@@ -30,10 +33,6 @@ public class CustomersDAO implements DAO<Customer> {
     private static final String SQL_DEL_CUSTOMER = "DELETE FROM " + SQL_TABLE_NAME + " WHERE \"ID\" = ?";
     private static final String SQL_UPDATE_CUSTOMER = "UPDATE " + SQL_TABLE_NAME + " SET "
             + SQL_UPDATE_COLUMNS_CUSTOMER;
-    /* Class members ------------------------------------------------------------------------------------------------------*/
-    private final PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-    private ResultSet resultSet;
-    private PreparedStatement statement;
     /*  Methods -----------------------------------------------------------------------------------------------------------*/
     /***
      * Retrieves a customer from database by ID.
@@ -43,17 +42,16 @@ public class CustomersDAO implements DAO<Customer> {
     @Override
     public Customer get(int id) {
         Customer customer = null;
-        try {
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_CUSTOMER_BY_ID);
-            statement.setLong(1,id);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_CUSTOMER_BY_ID)) {
+            statement.setLong(1, id);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                customer = fetchCustomerObject(resultSet);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    customer = fetchCustomerObject(resultSet);
+            }
+        } catch (SQLException e) {
+           e.printStackTrace();
         }
         return customer;
     }
@@ -65,17 +63,15 @@ public class CustomersDAO implements DAO<Customer> {
     @Override
     public List<Customer> getAll() {
         List<Customer> customersList = new ArrayList<>();
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_CUSTOMERS);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                customersList.add(fetchCustomerObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_CUSTOMERS)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    customersList.add(fetchCustomerObject(resultSet));
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return customersList;
     }
@@ -86,15 +82,12 @@ public class CustomersDAO implements DAO<Customer> {
      */
     @Override
     public void add(Customer customer) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_ADD_CUSTOMER);
-            fillStatement(statement,customer);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_ADD_CUSTOMER)) {
+            fillStatement(statement, customer);
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -104,15 +97,12 @@ public class CustomersDAO implements DAO<Customer> {
      */
     @Override
     public void remove(Customer customer) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_DEL_CUSTOMER);
-            statement.setLong(1,customer.getCustomerId());
-            statement.executeUpdate();
-        } catch (Exception e) {
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_DEL_CUSTOMER)) {
+                statement.setLong(1, customer.getCustomerId());
+                statement.executeUpdate();
+            } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -122,16 +112,13 @@ public class CustomersDAO implements DAO<Customer> {
      */
     @Override
     public void update(Customer customer) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_UPDATE_CUSTOMER);
+        try (Connection connection = PostgresConnectionUtil.getConnection()) {
+            PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_UPDATE_CUSTOMER);
             fillStatement(statement,customer);
             statement.setLong(7, customer.getCustomerId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */

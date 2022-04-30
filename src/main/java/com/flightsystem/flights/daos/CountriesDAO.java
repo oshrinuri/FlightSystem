@@ -1,18 +1,21 @@
 package com.flightsystem.flights.daos;
 
 import com.flightsystem.flights.dtos.Country;
-import com.flightsystem.flights.sqlconnection.PostgreSQLConnection;
+import com.flightsystem.flights.sqlconnection.PostgresConnectionUtil;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Data Access Layer (DAO) for Countries table in database, providing CRUD operations on database.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @Component
 public class CountriesDAO implements DAO<Country> {
@@ -25,10 +28,6 @@ public class CountriesDAO implements DAO<Country> {
     private static final String SQL_ADD_COUNTRY = "INSERT INTO " + SQL_TABLE_NAME + SQL_INSERT_VALUES_COUNTRY;
     private static final String SQL_DEL_COUNTRY = "DELETE FROM " + SQL_TABLE_NAME + " WHERE \"ID\" = ?";
     private static final String SQL_UPDATE_COUNTRY = "UPDATE " + SQL_TABLE_NAME + " SET " + SQL_UPDATE_COLUMNS_COUNTRY;
-    /* Class members ------------------------------------------------------------------------------------------------------*/
-    private final PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-    private ResultSet resultSet;
-    private PreparedStatement statement;
     /* Methods ------------------------------------------------------------------------------------------------------------*/
     /***
      * Retrieves a country from database by ID.
@@ -38,18 +37,16 @@ public class CountriesDAO implements DAO<Country> {
     @Override
     public Country get(int id) {
         Country country = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_COUNTRY_BY_ID);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_COUNTRY_BY_ID)) {
             statement.setLong(1, id);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                country = fetchCountryObject(resultSet);
-        } catch (Exception e) {
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    country = fetchCountryObject(resultSet);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return country;
     }
@@ -61,17 +58,15 @@ public class CountriesDAO implements DAO<Country> {
     @Override
     public List<Country> getAll() {
         List<Country> countriesList = new ArrayList<>();
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_COUNTRIES);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                countriesList.add(fetchCountryObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_COUNTRIES)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    countriesList.add(fetchCountryObject(resultSet));
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return countriesList;
     }
@@ -82,15 +77,12 @@ public class CountriesDAO implements DAO<Country> {
      */
     @Override
     public void add(Country country) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_ADD_COUNTRY);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_ADD_COUNTRY)) {
             fillStatement(statement, country);
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -100,16 +92,13 @@ public class CountriesDAO implements DAO<Country> {
      */
     @Override
     public void remove(Country country) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_DEL_COUNTRY);
-            statement.setLong(1, country.getCountryId());
-            statement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
-        }
+            try (Connection connection = PostgresConnectionUtil.getConnection();
+                 PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_DEL_COUNTRY)) {
+                statement.setLong(1, country.getCountryId());
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
     /***
@@ -118,16 +107,13 @@ public class CountriesDAO implements DAO<Country> {
      */
     @Override
     public void update(Country country) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_UPDATE_COUNTRY);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_UPDATE_COUNTRY)) {
             fillStatement(statement, country);
             statement.setInt(3, country.getCountryId());
             statement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
+        } catch (SQLException e) {
+           e.printStackTrace();
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */

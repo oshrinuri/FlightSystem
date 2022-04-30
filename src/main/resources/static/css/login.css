@@ -570,8 +570,7 @@ button:hover .button-text {
     position: relative
 }
 
-.form-button:disabled,
-.form-button:disabled:hover {
+.form-button:disabled,.form-button:disabled:hover {
     background: radial-gradient(circle, #898989 0, #919191 100%);
 }
 
@@ -683,7 +682,6 @@ button:hover .button-text {
     bottom: 0;
     transform: scale(0.125);
 }
-
 lottie-player {
     margin: auto 0;
 }

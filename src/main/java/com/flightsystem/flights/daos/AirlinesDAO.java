@@ -1,18 +1,21 @@
 package com.flightsystem.flights.daos;
 
 import com.flightsystem.flights.dtos.AirlineCompany;
-import com.flightsystem.flights.sqlconnection.PostgreSQLConnection;
+import com.flightsystem.flights.sqlconnection.PostgresConnectionUtil;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Data Access Layer (DAO) for Airlines_Company table in database, providing CRUD operations on database.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @Component
 public class AirlinesDAO implements DAO<AirlineCompany> {
@@ -30,10 +33,6 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
     private static final String SQL_UPDATE_AIRLINE = "UPDATE " + SQL_TABLE_NAME + " SET " + SQL_UPDATE_COLUMNS_AIRLINE;
     private static final String SQL_GET_ALL_AIRLINES_BY_COUNTRY_ID = "SELECT * FROM " + SQL_TABLE_NAME + "WHERE " +
             "\"Country_ID\" = ?";
-    /* Class members ------------------------------------------------------------------------------------------------------*/
-    private final PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-    private ResultSet resultSet;
-    private PreparedStatement statement;
     /* Methods ------------------------------------------------------------------------------------------------------------*/
     /***
      * Retrieves an airline from database by ID.
@@ -43,18 +42,16 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
     @Override
     public AirlineCompany get(int id) {
         AirlineCompany airlineCompany = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_AIRLINE_BY_ID);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_AIRLINE_BY_ID)) {
             statement.setLong(1, id);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                airlineCompany = fetchAirlineCompanyObject(resultSet);
-        } catch (Exception e) {
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    airlineCompany = fetchAirlineCompanyObject(resultSet);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return airlineCompany;
     }
@@ -66,17 +63,15 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
     @Override
     public List<AirlineCompany> getAll() {
         List<AirlineCompany> airlinesList = new ArrayList<>();
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_AIRLINES);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                airlinesList.add(fetchAirlineCompanyObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_AIRLINES)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    airlinesList.add(fetchAirlineCompanyObject(resultSet));
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return airlinesList;
     }
@@ -87,15 +82,12 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
      */
     @Override
     public void add(AirlineCompany airlineCompany) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_ADD_AIRLINE);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_ADD_AIRLINE)) {
             fillStatement(statement, airlineCompany);
             statement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
+        } catch (SQLException e) {
+           e.printStackTrace();
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -105,15 +97,12 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
      */
     @Override
     public void remove(AirlineCompany airlineCompany) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_DEL_AIRLINE);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_DEL_AIRLINE)) {
             statement.setLong(1, airlineCompany.getAirlineCompanyId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -123,16 +112,13 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
      */
     @Override
     public void update(AirlineCompany airlineCompany) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_UPDATE_AIRLINE);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_UPDATE_AIRLINE)) {
             fillStatement(statement, airlineCompany);
             statement.setLong(4, airlineCompany.getAirlineCompanyId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -144,19 +130,17 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
      */
     public AirlineCompany getAirlineByParameters(String airlineName, int countryId) {
         AirlineCompany airlineCompany = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_AIRLINE_BY_PARAMETERS);
-            statement.setString(1,airlineName);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_AIRLINE_BY_PARAMETERS)) {
+            statement.setString(1, airlineName);
             statement.setInt(2, countryId);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                airlineCompany = fetchAirlineCompanyObject(resultSet);
-        } catch (Exception e) {
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    airlineCompany = fetchAirlineCompanyObject(resultSet);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return airlineCompany;
     }
@@ -168,25 +152,20 @@ public class AirlinesDAO implements DAO<AirlineCompany> {
      */
     private static List<AirlineCompany> getAirlinesByCountry(int countryId) {
         List<AirlineCompany> airlinesList = new ArrayList<>();
-        PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_AIRLINES_BY_COUNTRY_ID);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_AIRLINES_BY_COUNTRY_ID)) {
             statement.setInt(1, countryId);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                airlinesList.add(fetchAirlineCompanyObject(resultSet));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    airlinesList.add(fetchAirlineCompanyObject(resultSet));
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return airlinesList;
     }
-    /* ------------------------------------------------------------------------------------------------------------------- */
+        /* ------------------------------------------------------------------------------------------------------------------- */
     /***
      * Helper method:
      * Retrieves a new AirlineCompany object from a given ResultSet filled with database values.

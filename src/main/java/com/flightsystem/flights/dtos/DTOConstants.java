@@ -2,8 +2,7 @@ package com.flightsystem.flights.dtos;
 /**
  * Constants for usage in DTO constructors (Input validation and Exceptions).
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 final class DTOConstants {
     /* Regex literals -----------------------------------------------------------------------------------------------------*/

@@ -7,11 +7,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Message DTO Service.
+ * @author  Oshri Nuri
+ * @version 1.3
+ */
 @Service
 public class MessageService {
-    @Autowired
-    MessageRepository messageRepository;
+    @Autowired private MessageRepository messageRepository;
     /* ------------------------------------------------------------------------------------------------------------------- */
     public List<Message> getAllMessages() {
         List<Message> messages = new ArrayList<>();

@@ -12,8 +12,7 @@ import static com.flightsystem.flights.facades.FacadeConstants.FLIGHT_NULL_EXCEP
 /**
  * Facade class of Airline.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @NoArgsConstructor
 @Component
@@ -35,7 +34,6 @@ public class AirlineFacade extends AnonymousFacade {
         if (flight == null) throw new NullPointerException(FLIGHT_NULL_EXCEPTION);
         if (flight.getAirlineCompanyId() != getMyTokenService().getCurrentAuthedPrincipal().getInternalId())
             throw new UnsupportedOperationException(FLIGHT_NOT_OWNED_EXCEPTION);
-        FlightsDAO flightsDAO = new FlightsDAO();
         flightsDAO.add(flight);
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -47,7 +45,6 @@ public class AirlineFacade extends AnonymousFacade {
         if (flight == null) throw new NullPointerException(FLIGHT_NULL_EXCEPTION);
         if (flight.getAirlineCompanyId() != getMyTokenService().getCurrentAuthedPrincipal().getInternalId())
             throw new UnsupportedOperationException(FLIGHT_NOT_OWNED_EXCEPTION);
-        FlightsDAO flightsDAO = new FlightsDAO();
         flightsDAO.update(flight);
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -59,7 +56,6 @@ public class AirlineFacade extends AnonymousFacade {
         if (flight == null) throw new NullPointerException(FLIGHT_NULL_EXCEPTION);
         if (flight.getAirlineCompanyId() != getMyTokenService().getCurrentAuthedPrincipal().getInternalId())
             throw new UnsupportedOperationException(FLIGHT_NOT_OWNED_EXCEPTION);
-        FlightsDAO flightsDAO = new FlightsDAO();
         flightsDAO.remove(flight);
     }
 }

@@ -1,5 +1,8 @@
 package com.flightsystem.flights.controllers;
 
+import com.flightsystem.flights.controllers.registration.UserData;
+import com.flightsystem.flights.daos.exceptions.EmailAlreadyExistException;
+import com.flightsystem.flights.daos.exceptions.UsernameAlreadyExistException;
 import com.flightsystem.flights.dtos.AirlineCompany;
 import com.flightsystem.flights.dtos.Country;
 import com.flightsystem.flights.dtos.Flight;
@@ -11,19 +14,28 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+/**
+ * Anonymous User REST Controller implementation
+ * @author  Oshri Nuri
+ * @version 1.3
+ */
 @Controller
 public class AnonymousController {
     @Autowired private AnonymousFacade anonymousFacade;
+    private static final int ROLE_CUSTOMER = 1;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @GetMapping({"/","login"})
-    public String login() {
+    public String login(final Model model) {
+        model.addAttribute("userData", new UserData());
         return "login";
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -95,10 +107,30 @@ public class AnonymousController {
         return anonymousFacade.getCountryById(countryId);
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
-    @PostMapping("/user")
-    @ResponseBody
-    public void createNewUser(@RequestBody User user) {
-        anonymousFacade.createNewUser(user);
+    @GetMapping("/registerSuccess")
+    public String postRegister() {
+        return "registerSuccess";
+    }
+    /* ------------------------------------------------------------------------------------------------------------------- */
+    @PostMapping("/register")
+    public String userRegistration(final @Valid UserData userData, final BindingResult bindingResult, final Model model){
+      if(bindingResult.hasErrors()){
+            model.addAttribute("registrationForm", userData);
+            return "login";
+        }
+        try {
+            anonymousFacade.addCustomer(new User(0,userData.getUsername(),userData.getPassword(),userData.getEmail(),
+                    ROLE_CUSTOMER,"",true));
+        }catch (EmailAlreadyExistException e) {
+            bindingResult.rejectValue("email", "userData.email","An account already exists for this email.");
+            model.addAttribute("registrationForm", userData);
+            return "/login";
+        } catch (UsernameAlreadyExistException e) {
+            bindingResult.rejectValue("username", "userData.username","Username already exists.");
+            model.addAttribute("registrationForm", userData);
+            return "/login";
+        }
+        return "/registerSuccess";
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
     private String getParsedRole(Collection<? extends GrantedAuthority> authorities) {

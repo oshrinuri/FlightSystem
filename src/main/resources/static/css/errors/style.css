@@ -1,0 +1,89 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+html,
+body {
+    background-color: #121b40;
+    color: #fff;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Mukta", sans-serif;
+    font-size: 24px;
+}
+.container {
+    font-family: "Mukta", sans-serif;
+    position: absolute;
+    color: #ffffff;
+    font-weight: 500;
+    height: fit-content;
+    width: fit-content;
+    text-align: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 30px;
+    line-height: 0px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#lottie-401 {
+    height: 300px;
+    width: 300px;
+    margin-bottom: 40px !important;
+    margin: 0 auto;
+}
+#lottie-403 {
+    height: 360px;
+    width: 360px;
+    margin: 0 auto;
+}
+#lottie-404 {
+    height: 400px;
+    width: 400px;
+    margin: 0 auto;
+}
+#lottie-error {
+    height: fit-content;
+    margin-bottom: 40px !important;
+    width: 500px;
+    margin: 0 auto;
+}
+
+#login-alert {
+    font-family: "Roboto", sans-serif;
+    position: absolute;
+    color: #fff;
+    font-size: 24px;
+    height: fit-content;
+    width: fit-content;
+    text-align: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 30px;
+    line-height: 34px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    line-height: 1;
+}
+
+h4 {
+    font-size: 24px;
+}
+
+h6 {
+    font-size: 20px;
+}

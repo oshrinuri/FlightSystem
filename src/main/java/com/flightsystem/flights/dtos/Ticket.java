@@ -9,8 +9,7 @@ import static com.flightsystem.flights.dtos.DTOConstants.NEGATIVE_VALUE_EXCEPTIO
 /**
  * Data Transfer Object (DTO) class of Ticket.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @EqualsAndHashCode
 @Getter @Setter @ToString

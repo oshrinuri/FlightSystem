@@ -1,18 +1,21 @@
 package com.flightsystem.flights.daos;
 
 import com.flightsystem.flights.dtos.Ticket;
-import com.flightsystem.flights.sqlconnection.PostgreSQLConnection;
+import com.flightsystem.flights.sqlconnection.PostgresConnectionUtil;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Data Access Layer (DAO) for Tickets table in database, providing CRUD operations on database.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @Component
 public class TicketsDAO implements DAO<Ticket> {
@@ -27,10 +30,6 @@ public class TicketsDAO implements DAO<Ticket> {
     private static final String SQL_UPDATE_TICKET = "UPDATE " + SQL_TABLE_NAME + " SET " + SQL_UPDATE_COLUMNS_TICKET;
     private static final String SQL_GET_TICKETS_BY_CUSTOMER = "SELECT \"ID\",\"Flight_ID\",\"Customer_ID\" " +
             "FROM get_tickets_by_customer(?)";
-    /* Class members ------------------------------------------------------------------------------------------------------*/
-    private final PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-    private ResultSet resultSet;
-    private PreparedStatement statement;
     /* Methods ------------------------------------------------------------------------------------------------------------*/
     /***
      * Retrieves a ticket from database by ID.
@@ -40,18 +39,16 @@ public class TicketsDAO implements DAO<Ticket> {
     @Override
     public Ticket get(int id) {
         Ticket ticket = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_TICKET_BY_ID);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_TICKET_BY_ID)) {
             statement.setLong(1, id);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                ticket = fetchTicketObject(resultSet);
-        } catch (Exception e) {
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    ticket = fetchTicketObject(resultSet);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return ticket;
     }
@@ -63,17 +60,14 @@ public class TicketsDAO implements DAO<Ticket> {
     @Override
     public List<Ticket> getAll() {
         List<Ticket> ticketList = new ArrayList<>();
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_TICKETS);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                ticketList.add(fetchTicketObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_TICKETS)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    ticketList.add(fetchTicketObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return ticketList;
     }
@@ -84,15 +78,12 @@ public class TicketsDAO implements DAO<Ticket> {
      */
     @Override
     public void add(Ticket ticket) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_ADD_TICKET);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_ADD_TICKET)) {
             fillStatement(statement, ticket);
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -102,15 +93,12 @@ public class TicketsDAO implements DAO<Ticket> {
      */
     @Override
     public void remove(Ticket ticket) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_DEL_TICKET);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_DEL_TICKET)) {
             statement.setLong(1, ticket.getTicketId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -120,16 +108,13 @@ public class TicketsDAO implements DAO<Ticket> {
      */
     @Override
     public void update(Ticket ticket) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_UPDATE_TICKET);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_UPDATE_TICKET)) {
             fillStatement(statement, ticket);
             statement.setLong(3, ticket.getTicketId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -140,21 +125,15 @@ public class TicketsDAO implements DAO<Ticket> {
      */
     public static List<Ticket> getTicketsByCustomerId(long customerId) {
         List<Ticket> ticketList = new ArrayList<>();
-        PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_TICKETS_BY_CUSTOMER);
-            statement.setLong(1,customerId);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                ticketList.add(fetchTicketObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_GET_TICKETS_BY_CUSTOMER)) {
+            statement.setLong(1, customerId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    ticketList.add(fetchTicketObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return ticketList;
     }

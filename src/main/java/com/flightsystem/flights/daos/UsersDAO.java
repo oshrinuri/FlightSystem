@@ -1,19 +1,21 @@
 package com.flightsystem.flights.daos;
 
 import com.flightsystem.flights.dtos.User;
-import com.flightsystem.flights.sqlconnection.PostgreSQLConnection;
+import com.flightsystem.flights.sqlconnection.PostgresConnectionUtil;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data Access Layer (DAO) for Users table in database, providing CRUD operations on database.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @Component
 public class UsersDAO implements DAO<User> {
@@ -28,7 +30,7 @@ public class UsersDAO implements DAO<User> {
     private static final String SQL_UPDATE_COLUMNS_USER = "\"Username\" = ?, \"Password\" = ?," +
             "\"Email\" = ?, \"User_Role\" = ? , \"Thumbnail_URL\" = ? , \"Enabled\" = ? WHERE \"ID\" = ?";
     private static final String SQL_INSERT_VALUES_USER = " (\"Username\"," +
-            "\"Password\",\"Email\",\"User_Role\",\"Thumbnail_URL\",\"Enabled\") VALUES (?,crypt(?,gen_salt('bf,10)),?,?," +
+            "\"Password\",\"Email\",\"User_Role\",\"Thumbnail_URL\",\"Enabled\") VALUES (?,crypt(?,gen_salt('bf',10)),?,?," +
             "?,?)";
     private static final String SQL_ADD_USER = "INSERT INTO " + SQL_TABLE_NAME + SQL_INSERT_VALUES_USER;
     private static final String SQL_DEL_USER = "DELETE FROM " + SQL_TABLE_NAME + " WHERE \"ID\" = ?";
@@ -36,10 +38,6 @@ public class UsersDAO implements DAO<User> {
     private static final String SQL_GET_CUSTOMER_BY_USERNAME = "SELECT * FROM get_customer_by_username(?)";
     private static final String SQL_GET_AIRLINE_BY_USERNAME = "SELECT * FROM get_airline_by_username(?)";
     private static final String SQL_GET_ADMIN_BY_USERNAME = "SELECT * FROM get_admin_by_username(?)";
-    /* Class members -------------------------------------------------------------------------------------------------*/
-    private final PostgreSQLConnection postgresJDBCConnection = new PostgreSQLConnection();
-    private ResultSet resultSet;
-    private PreparedStatement statement;
     /* Methods -------------------------------------------------------------------------------------------------------*/
     /***
      * Retrieves a User from database by ID.
@@ -49,18 +47,16 @@ public class UsersDAO implements DAO<User> {
     @Override
     public User get(int id) {
         User user = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_USER_BY_ID);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_USER_BY_ID)) {
             statement.setLong(1, id);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                user = fetchUserObject(resultSet);
-        } catch (Exception e) {
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    user = fetchUserObject(resultSet);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return user;
     }
@@ -72,41 +68,20 @@ public class UsersDAO implements DAO<User> {
     @Override
     public List<User> getAll() {
         List<User> userList = new ArrayList<>();
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_ALL_USERS);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                userList.add(fetchUserObject(resultSet));
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_ALL_USERS)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    userList.add(fetchUserObject(resultSet));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
         return userList;
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
     public User getByUsername(String username) {
-        User user = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_USER_BY_USERNAME);
-            statement.setString(1, username);
-            statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                user = fetchUserObject(resultSet);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return user;
+        return this.getAll().stream().filter(u->u.getUsername().equals(username)).findFirst().orElse(null);
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
     /***
@@ -117,25 +92,17 @@ public class UsersDAO implements DAO<User> {
      */
     public User getByCredentials(String username, String password) {
         User user = null;
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_GET_USER_BY_CREDENTIALS);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_GET_USER_BY_CREDENTIALS)) {
             statement.setString(1, username);
             statement.setString(2, password);
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                user = fetchUserObject(resultSet);
-            else
-                return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
-            } catch (Exception e) {
-                e.printStackTrace();
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    user = fetchUserObject(resultSet);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return user;
     }
@@ -146,15 +113,12 @@ public class UsersDAO implements DAO<User> {
      */
     @Override
     public void add(User user) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_ADD_USER);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement = Objects.requireNonNull(connection).prepareStatement(SQL_ADD_USER)) {
             fillStatement(statement, user);
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -172,18 +136,16 @@ public class UsersDAO implements DAO<User> {
             case 3->  SQL_GET_AIRLINE_BY_USERNAME;
             default -> throw new IllegalStateException("Unexpected value: " + user.getUserRole());
         };
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(query);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(query)) {
             statement.setString(1, user.getUsername());
             statement.executeQuery();
-            resultSet = statement.getResultSet();
-            if (resultSet.next())
-                internalId = resultSet.getLong("ID");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
+            try (ResultSet resultSet = statement.getResultSet()) {
+                if (resultSet.next())
+                    internalId = resultSet.getLong("ID");
+            }
+        } catch (SQLException e) {
+           e.printStackTrace();
         }
         return internalId;
     }
@@ -194,15 +156,12 @@ public class UsersDAO implements DAO<User> {
      */
     @Override
     public void remove(User user) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_DEL_USER);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_DEL_USER)) {
             statement.setLong(1, user.getUserId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */
@@ -212,16 +171,13 @@ public class UsersDAO implements DAO<User> {
      */
     @Override
     public void update(User user) {
-        try {
-            postgresJDBCConnection.connect();
-            statement = postgresJDBCConnection.prepareStatement(SQL_UPDATE_USER);
+        try (Connection connection = PostgresConnectionUtil.getConnection();
+             PreparedStatement statement =  Objects.requireNonNull(connection).prepareStatement(SQL_UPDATE_USER)) {
             fillStatement(statement, user);
             statement.setLong(7, user.getUserId());
             statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-               PostgreSQLConnection.freeDatabaseResources(postgresJDBCConnection, statement, resultSet);
         }
     }
     /* ------------------------------------------------------------------------------------------------------------------- */

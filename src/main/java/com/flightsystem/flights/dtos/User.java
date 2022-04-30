@@ -7,28 +7,29 @@ import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.Serializable;
+
 import static com.flightsystem.flights.dtos.DTOConstants.*;
 /**
  * Data Transfer Object (DTO) class of User.
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @EqualsAndHashCode
 @Getter @Setter @ToString
-public class User implements DTO {
+public class User implements DTO, Serializable {
     /* Constants --------------------------------------------------------------------------------------------------------- */
     private static final int MIN_PASSWORD_LENGTH = 6;
     private static final String INVALID_PASSWORD_EXCEPTION = "Password is too short. " + MIN_PASSWORD_LENGTH +
             " characters minimum.";
     /* Class members ------------------------------------------------------------------------------------------------------*/
-    @Autowired private PasswordEncoder passwordEncoder; // Database password encoder - BCrypt
+    @Autowired private transient PasswordEncoder passwordEncoder; // Database password encoder - BCrypt
     /* ------------------------------------------------------------------------------------------------------------------- */
     private long userId;
     private String username;
-    private String password;
+    private transient String password;
     private String email;
-    private int userRole;
+    private int userRole; // 1 -> ROLE_CUSTOMER , 2 -> ROLE_ADMIN , 3-> ROLE_AIRLINE
     private String thumbnailURL;
     private boolean isEnabled;
     /* Constructor ------------------------------------------------------------------------------------------------------- */

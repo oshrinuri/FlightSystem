@@ -9,8 +9,7 @@ import static com.flightsystem.flights.dtos.DTOConstants.*;
 /**
  * Data Transfer Object (DTO) class of Customer
  * @author  Oshri Nuri
- * @version 1.0
- * @since   17/03/2022
+ * @version 1.3
  */
 @Getter @Setter @ToString
 @EqualsAndHashCode
@@ -48,9 +47,7 @@ public class Customer implements DTO {
             throw new IllegalArgumentException(INVALID_NAME_EXCEPTION);
         if (address.trim().isEmpty()) throw new IllegalArgumentException(EMPTY_ADDRESS_EXCEPTION);
         if (phoneNumber.trim().isEmpty()) throw new IllegalArgumentException(EMPTY_PHONE_EXCEPTION);
-        if (!phoneNumber.matches(REGEX_NUMBERS_ONLY)) throw new IllegalArgumentException(INVALID_PHONE_EXCEPTION);
         if (creditCardNumber.trim().isEmpty()) throw new IllegalArgumentException(EMPTY_CREDIT_CARD_EXCEPTION);
-        if (!creditCardNumber.matches(REGEX_NUMBERS_ONLY)) throw new IllegalArgumentException(INVALID_CREDIT_CARD_EXCEPTION);
         if (customerId <= 0 || userId <= 0) throw new IllegalArgumentException(NEGATIVE_VALUE_EXCEPTION);
     }
 }

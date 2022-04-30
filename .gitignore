@@ -42,3 +42,4 @@ index.html
 Procfile
 system.properties
 src/main/resources/postgres.properties
+src/main/resources/application.properties
