@@ -3,19 +3,17 @@ package com.flightsystem.flights.controllers;
 import com.flightsystem.flights.dtos.Customer;
 import com.flightsystem.flights.dtos.Ticket;
 import com.flightsystem.flights.facades.CustomerFacade;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-/**
- * Customer REST Controller implementation
- * @author  Oshri Nuri
- * @version 1.3
- */
+
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("customer")
 public class CustomerController {
-    @Autowired private CustomerFacade customerFacade;
+    private final CustomerFacade customerFacade;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @PostMapping("/tickets")
     public void addTicket(@RequestBody Ticket ticket) {

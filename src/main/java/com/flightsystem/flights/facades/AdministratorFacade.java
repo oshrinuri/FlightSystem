@@ -1,11 +1,10 @@
 package com.flightsystem.flights.facades;
 
-import com.flightsystem.flights.daos.AdministratorDAO;
-import com.flightsystem.flights.daos.CustomersDAO;
+import com.flightsystem.flights.daos.*;
 import com.flightsystem.flights.dtos.Administrator;
 import com.flightsystem.flights.dtos.AirlineCompany;
 import com.flightsystem.flights.dtos.Customer;
-import lombok.NoArgsConstructor;
+import com.flightsystem.flights.services.MyTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +14,15 @@ import static com.flightsystem.flights.facades.FacadeConstants.*;
 /**
  * Facade class of Administrator.
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
-@NoArgsConstructor
 @Component
 public class AdministratorFacade extends AnonymousFacade {
-    @Autowired AdministratorDAO administratorDAO;
-    @Autowired CustomersDAO customersDAO;
+    @Autowired public AdministratorFacade(MyTokenService myTokenService, AdministratorDAO administratorDAO, FlightsDAO flightsDAO, AirlinesDAO airlinesDAO, CountriesDAO countriesDAO, UsersDAO usersDAO, CustomersDAO customersDAO, TicketsDAO ticketsDAO) {
+        super(myTokenService, administratorDAO, flightsDAO, airlinesDAO, countriesDAO, usersDAO, customersDAO, ticketsDAO);
+    }
+
     /* ------------------------------------------------------------------------------------------------------------------- */
     /***
      * Retrieves a list of all Customers from database.

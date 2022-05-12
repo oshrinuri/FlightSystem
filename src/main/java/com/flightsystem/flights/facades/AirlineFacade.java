@@ -1,8 +1,9 @@
 package com.flightsystem.flights.facades;
 
-import com.flightsystem.flights.daos.FlightsDAO;
+import com.flightsystem.flights.daos.*;
 import com.flightsystem.flights.dtos.Flight;
-import lombok.NoArgsConstructor;
+import com.flightsystem.flights.services.MyTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,11 +13,15 @@ import static com.flightsystem.flights.facades.FacadeConstants.FLIGHT_NULL_EXCEP
 /**
  * Facade class of Airline.
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
-@NoArgsConstructor
 @Component
 public class AirlineFacade extends AnonymousFacade {
+    @Autowired public AirlineFacade(MyTokenService myTokenService, AdministratorDAO administratorDAO, FlightsDAO flightsDAO, AirlinesDAO airlinesDAO, CountriesDAO countriesDAO, UsersDAO usersDAO, CustomersDAO customersDAO, TicketsDAO ticketsDAO) {
+        super(myTokenService, administratorDAO, flightsDAO, airlinesDAO, countriesDAO, usersDAO, customersDAO, ticketsDAO);
+    }
+
     /* ------------------------------------------------------------------------------------------------------------------- */
     /***
      * Retrieves a list of all Flights operated by the current Airline.

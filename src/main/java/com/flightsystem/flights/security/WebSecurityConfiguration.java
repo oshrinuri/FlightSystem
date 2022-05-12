@@ -1,7 +1,7 @@
 package com.flightsystem.flights.security;
 
 import com.flightsystem.flights.services.MyUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,16 +12,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 
 import static com.flightsystem.flights.enums.UserRole.*;
-/**
- * Configuration file for Springboot Web Security.
- * @author  Oshri Nuri
- * @version 1.3
- */
+
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     /* Class members ------------------------------------------------------------------------------------------------------*/
-    @Autowired private MyUserDetailsService myUserDetailsService;
+    private final MyUserDetailsService myUserDetailsService;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @Bean
     public static BCryptPasswordEncoder bCryptEncoder() {

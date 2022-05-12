@@ -9,7 +9,7 @@ import com.flightsystem.flights.dtos.Flight;
 import com.flightsystem.flights.dtos.User;
 import com.flightsystem.flights.facades.AnonymousFacade;
 import com.flightsystem.flights.security.MyUserPrincipal;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,14 +23,10 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-/**
- * Anonymous User REST Controller implementation
- * @author  Oshri Nuri
- * @version 1.3
- */
+@RequiredArgsConstructor
 @Controller
 public class AnonymousController {
-    @Autowired private AnonymousFacade anonymousFacade;
+    private final AnonymousFacade anonymousFacade;
     private static final int ROLE_CUSTOMER = 1;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @GetMapping({"/","login"})

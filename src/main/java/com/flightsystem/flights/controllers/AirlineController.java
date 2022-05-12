@@ -2,19 +2,17 @@ package com.flightsystem.flights.controllers;
 
 import com.flightsystem.flights.dtos.Flight;
 import com.flightsystem.flights.facades.AirlineFacade;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-/**
- * Airline REST Controller implementation
- * @author  Oshri Nuri
- * @version 1.3
- */
+
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("airline")
 public class AirlineController {
-    @Autowired private AirlineFacade airlineFacade;
+    private final AirlineFacade airlineFacade;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @GetMapping("/flights")
     public List<Flight> getAirlineFlights() {

@@ -1,11 +1,10 @@
 package com.flightsystem.flights.facades;
 
-import com.flightsystem.flights.daos.CustomersDAO;
-import com.flightsystem.flights.daos.TicketsDAO;
+import com.flightsystem.flights.daos.*;
 import com.flightsystem.flights.dtos.Customer;
 import com.flightsystem.flights.dtos.Flight;
 import com.flightsystem.flights.dtos.Ticket;
-import lombok.NoArgsConstructor;
+import com.flightsystem.flights.services.MyTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,13 +15,17 @@ import static com.flightsystem.flights.facades.FacadeConstants.*;
 /**
  * Facade class of Customer.
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
-@NoArgsConstructor
+
+
 @Component
 public class CustomerFacade extends AnonymousFacade {
-    @Autowired CustomersDAO customersDAO;
-    @Autowired TicketsDAO ticketsDAO;
+    @Autowired public CustomerFacade(MyTokenService myTokenService, AdministratorDAO administratorDAO, FlightsDAO flightsDAO, AirlinesDAO airlinesDAO, CountriesDAO countriesDAO, UsersDAO usersDAO, CustomersDAO customersDAO, TicketsDAO ticketsDAO) {
+        super(myTokenService, administratorDAO, flightsDAO, airlinesDAO, countriesDAO, usersDAO, customersDAO, ticketsDAO);
+    }
+
     /***
      * Update the current existing Customer (Must be with the same ID of LoginToken).
      * @param customer The customer to be updated with.

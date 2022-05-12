@@ -8,7 +8,8 @@ import static com.flightsystem.flights.dtos.DTOConstants.*;
 /**
  * Data Transfer Object (DTO) class of Flight.
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
 @NoArgsConstructor
 @EqualsAndHashCode

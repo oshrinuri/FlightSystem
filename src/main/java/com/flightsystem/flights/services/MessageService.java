@@ -2,19 +2,16 @@ package com.flightsystem.flights.services;
 
 import com.flightsystem.flights.dtos.Message;
 import com.flightsystem.flights.repositories.MessageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-/**
- * Message DTO Service.
- * @author  Oshri Nuri
- * @version 1.3
- */
+
+@RequiredArgsConstructor
 @Service
 public class MessageService {
-    @Autowired private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
     /* ------------------------------------------------------------------------------------------------------------------- */
     public List<Message> getAllMessages() {
         List<Message> messages = new ArrayList<>();

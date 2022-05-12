@@ -6,9 +6,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
-/***
- * UserData class to be called in registration form with Thymeleaf.
- */
 @Getter
 @Setter
 public class UserData implements Serializable {

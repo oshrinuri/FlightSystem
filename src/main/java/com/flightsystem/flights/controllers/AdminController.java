@@ -4,20 +4,17 @@ import com.flightsystem.flights.dtos.Administrator;
 import com.flightsystem.flights.dtos.AirlineCompany;
 import com.flightsystem.flights.dtos.Customer;
 import com.flightsystem.flights.facades.AdministratorFacade;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Admin REST Controller implementation
- * @author  Oshri Nuri
- * @version 1.3
- */
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("admin")
 public class AdminController {
-    @Autowired private AdministratorFacade administratorFacade;
+    private final AdministratorFacade administratorFacade;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @GetMapping("/customers")
     @ResponseBody

@@ -2,7 +2,8 @@ package com.flightsystem.flights.facades;
 /**
  * For usage in Facades (Constants and Exceptions literals).
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
 final class FacadeConstants {
     /* Exceptions literals ------------------------------------------------------------------------------------------------*/

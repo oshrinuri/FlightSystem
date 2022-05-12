@@ -5,11 +5,6 @@ import lombok.ToString;
 
 import javax.persistence.*;
 
-/**
- * JPA Implementation of Messages table in database.
- * @author  Oshri Nuri
- * @version 1.3
- */
 @Getter
 @ToString
 @Entity

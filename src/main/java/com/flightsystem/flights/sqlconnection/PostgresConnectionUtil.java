@@ -9,7 +9,8 @@ import java.util.Properties;
 /**
  * PostgreSQL Database connection and resources utility class.
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
 public final class PostgresConnectionUtil {
     //-----------------------------------------------------------------------------------------------------------------------

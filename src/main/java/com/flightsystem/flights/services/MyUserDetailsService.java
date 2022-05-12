@@ -3,20 +3,16 @@ package com.flightsystem.flights.services;
 import com.flightsystem.flights.daos.UsersDAO;
 import com.flightsystem.flights.dtos.User;
 import com.flightsystem.flights.security.MyUserPrincipal;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-/**
- * Custom implementation UserDetailsService.
- * @author  Oshri Nuri
- * @version 1.3
- */
+@RequiredArgsConstructor
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-    @Autowired private UsersDAO usersDAO;
+    private final UsersDAO usersDAO;
     private static final int ROLE_ADMIN = 2;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @Override

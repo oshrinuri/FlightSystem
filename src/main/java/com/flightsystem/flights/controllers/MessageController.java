@@ -2,19 +2,17 @@ package com.flightsystem.flights.controllers;
 
 import com.flightsystem.flights.dtos.Message;
 import com.flightsystem.flights.services.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-/**
- * Contact-Us REST Controller implementation
- * @author  Oshri Nuri
- * @version 1.3
- */
+
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("contact-us")
 public class MessageController {
-    @Autowired MessageService messageService;
+    private final MessageService messageService;
     /* ------------------------------------------------------------------------------------------------------------------- */
     @GetMapping("/messages/{id}")
     public Message getMessageById(@PathVariable("id") int id) {

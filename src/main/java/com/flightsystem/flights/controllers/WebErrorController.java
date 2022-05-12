@@ -7,11 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
-/**
- * WebError REST Controller implementation (used to provide custom redirection to HTTP errors).
- * @author  Oshri Nuri
- * @version 1.3
- */
+
 @Controller
 public class WebErrorController implements ErrorController {
 

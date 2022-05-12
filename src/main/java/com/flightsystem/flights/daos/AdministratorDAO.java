@@ -15,7 +15,8 @@ import java.util.Objects;
 /**
  * Data Access Layer (DAO) for Administrators table in database, providing CRUD operations on database.
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
 @Component
 public class AdministratorDAO implements DAO<Administrator> {

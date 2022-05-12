@@ -1,9 +1,6 @@
 package com.flightsystem.flights.facades;
 
-import com.flightsystem.flights.daos.AirlinesDAO;
-import com.flightsystem.flights.daos.CountriesDAO;
-import com.flightsystem.flights.daos.FlightsDAO;
-import com.flightsystem.flights.daos.UsersDAO;
+import com.flightsystem.flights.daos.*;
 import com.flightsystem.flights.daos.exceptions.EmailAlreadyExistException;
 import com.flightsystem.flights.daos.exceptions.UsernameAlreadyExistException;
 import com.flightsystem.flights.dtos.AirlineCompany;
@@ -12,7 +9,8 @@ import com.flightsystem.flights.dtos.Flight;
 import com.flightsystem.flights.dtos.User;
 import com.flightsystem.flights.services.MyTokenService;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -22,14 +20,21 @@ import static com.flightsystem.flights.facades.FacadeConstants.*;
 /**
  * Abstract base class for all Facade types.
  * @author  Oshri Nuri
- * @version 1.3
+ * @version 1.2
+ * @since   17/03/2022
  */
+
+@RequiredArgsConstructor
+@Component
 public abstract class FacadeBase {
-    @Getter @Autowired MyTokenService myTokenService;
-    @Autowired FlightsDAO flightsDAO;
-    @Autowired AirlinesDAO airlinesDAO;
-    @Autowired CountriesDAO countriesDAO;
-    @Autowired UsersDAO usersDAO;
+    @Getter protected final  MyTokenService myTokenService;
+    protected final AdministratorDAO administratorDAO;
+    protected final FlightsDAO flightsDAO;
+    protected final AirlinesDAO airlinesDAO;
+    protected final CountriesDAO countriesDAO;
+    protected final UsersDAO usersDAO;
+    protected final CustomersDAO customersDAO;
+    protected final TicketsDAO ticketsDAO;
     /* ------------------------------------------------------------------------------------------------------------------- */
     /***
      * Retrieves a list of all Flights from DB.
