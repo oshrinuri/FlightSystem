@@ -26,7 +26,7 @@
 Screenshots
 ---  
   
-<img src="https://github.com/oshrinuri/FlightSystem/blob/main/src/main/resources/static/1.png"/><br><br><br><br>
-<img src="https://github.com/oshrinuri/FlightSystem/blob/main/src/main/resources/static/2.png"/><br><br><br><br>
-<img src="https://github.com/oshrinuri/FlightSystem/blob/main/src/main/resources/static/3.png"/><br><br><br><br>
+<img src="https://github.com/oshrinuri/FlightSystem/blob/main/src/main/resources/static/1.png" height="75%" width="75%"/><br><br><br><br>
+<img src="https://github.com/oshrinuri/FlightSystem/blob/main/src/main/resources/static/2.png" height="75%" width="75%"/><br><br><br><br>
+<img src="https://github.com/oshrinuri/FlightSystem/blob/main/src/main/resources/static/3.png" height="75%" width="75%"/><br><br><br><br>
 </div>
